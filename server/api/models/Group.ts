@@ -1,3 +1,4 @@
+import { DataTypes } from "sequelize";
 import database from "../../database";
 
 export const Group = database.define("Group", {
@@ -6,6 +7,7 @@ export const Group = database.define("Group", {
     primaryKey: true,
     autoIncrement: true,
   },
-  name: DataTypes.STRING,
+  group: DataTypes.STRING,
   description: DataTypes.STRING,
+  course: DataTypes.INTEGER,
 });

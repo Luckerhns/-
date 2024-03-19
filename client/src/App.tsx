@@ -1,25 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import logo from "./logo.svg";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { privateRoutes, publicRoutes } from "./utils/routes";
+import { useTypedSelector } from "./hooks/useTypedSelector";
+import { PublicRoutesEnum } from "./utils/consts";
 
 function App() {
+  const isAdmin = Boolean(localStorage.getItem("isAdmin"));
+  // localStorage.clear()
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {isAdmin
+          ? privateRoutes.map((e) => (
+              <Route path={e.path} key={e.path} element={<e.element />} />
+            ))
+          : publicRoutes.map((e) => (
+              <Route path={e.path} key={e.path} element={<e.element />} />
+            ))}
+        <Route path="*" element={<Navigate to={PublicRoutesEnum.MainPath} />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

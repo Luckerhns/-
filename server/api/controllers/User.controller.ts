@@ -1,4 +1,4 @@
-import { User } from "../models/User";
+import { Student } from "../models/Student";
 import UserService from "../services/User.service";
 
 export default class UserController {
@@ -9,7 +9,7 @@ export default class UserController {
 
       return res.json(User);
     } catch (error) {
-      next(error);
+      next(error.message);
     }
   }
 

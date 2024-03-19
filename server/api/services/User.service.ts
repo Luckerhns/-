@@ -1,11 +1,11 @@
 import ModelException from "../errors/ModelException";
 import ErrorException from "../errors/ErrorException";
-import { User } from "../models/User";
+import { Student } from "../models/Student";
 
 export default class UserService {
   static async createUser(userData) {
     try {
-      const candidate = await User.findOne({
+      const candidate = await Student.findOne({
         where: { email: userData.email },
       });
 
@@ -13,45 +13,54 @@ export default class UserService {
         throw new ModelException(409, "User already exists");
       }
 
-      const user = await User.create(userData);
-      if (!user) {
-        throw new ModelException("User could not be created");
-      }
+      const user = await Student.create({
+        email: userData.email,
+        password: userData.password,
+      });
 
+      if (!user) {
+        throw new ModelException(404, "User could not be created");
+      }
       return user;
     } catch (error) {
-      throw ErrorException(`Error while creating new user : ${error}`);
+      throw new ErrorException(
+        500,
+        `Error while creating new user : ${error.message}`
+      );
     }
   }
 
-  static async getUser(body) {
+  static async getUser(body: any) {
     try {
-      const user = await User.findOne({
-        firstname: body.firstname,
-        lastname: body.lastname,
-        patronymic: body.patronymic,
-      });
+      const user = await Student.findOne({ where: body });
+
       if (!user) {
-        throw ModelException(404, "User not found");
+        throw new ModelException(404, "User not found");
       }
 
       return user;
     } catch (error) {
-      throw ErrorException(`Error while getting user : ${error}`);
+      throw new ErrorException(
+        403,
+        `Error while getting user : ${error.message}`
+      );
     }
   }
 
   static async getAllUsersByGroup(body) {
     try {
-      const users = await User.findAll(body.group);
+      const users = await Student.findAll(body.group);
       if (!users) {
-        throw ModelException(404, "This group doenst exist");
+        throw new ModelException(404, "This group doenst exist");
       }
       if (!users) {
-        throw ModelException(404, "Users not found");
+        throw new ModelException(404, "Users not found");
       }
-    } catch {
-      throw ErrorException(`Error while getting users group : ${error}`);
+    } catch (error) {
+      throw new ErrorException(
+        403,
+        `Error while getting users group : ${error}`
+      );
     }
   }
 }
