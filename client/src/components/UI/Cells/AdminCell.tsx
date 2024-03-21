@@ -7,27 +7,28 @@ import {
   ICalendarData,
 } from "../../../types/Calendar";
 import { useTypedSelector } from "../../../hooks/useTypedSelector";
-import { findCurrentDate } from "../../../utils/functions";
 
 const AdminCell: FC<IAdminCell> = ({
   selectedRecordField,
   eventDate,
   openRecordModal,
+  openRecordModalTimes,
   events,
   selectedCellDate,
 }) => {
   const { selectedUserDate } = useTypedSelector((state) => state.recordModal);
-  const currentDate: any[] = findCurrentDate(events, selectedUserDate);
+  const currentDate = events.find((date: any) => {if(date.date === eventDate?.date) return date.date});
+  console.log(currentDate)
   return (
     <div
       className={styles.admin__cell}
       onClick={() => {
-        openRecordModal(true, selectedCellDate, true);
-        console.log(selectedCellDate);
+        // openRecordModal(true, selectedCellDate, true);
+        console.log(eventDate, selectedCellDate);
       }}
     >
       <div className={styles.cell__content}>
-        <span>На этот день занятых записей {eventDate?.busyTimes?.length}</span>
+        <span>На этот день была пара</span>
         <div className={styles.admin__btn__container}>
           <div
             style={{ opacity: selectedRecordField ? 1 : 0 }}
@@ -35,7 +36,8 @@ const AdminCell: FC<IAdminCell> = ({
             onClick={
               selectedRecordField
                 ? () => {
-                    openRecordModal(false, selectedCellDate, false);
+                    openRecordModalTimes(selectedCellDate, eventDate);
+                    console.log(eventDate);
                   }
                 : () => console.log(eventDate)
             }

@@ -61,15 +61,14 @@ export const RecordActionCreators = {
   }),
 
   openRecordModalTimes:
-    (allTimes: any, date: string, dates?: any) =>
+    (date: string, eventDate?:any) =>
     async (dispatch: AppDispatch) => {
       try {
         setTimeout(() => {
           try {
             dispatch(RecordActionCreators.openRecordModal());
-            dispatch(RecordActionCreators.setTimes(allTimes));
             dispatch(RecordActionCreators.selectDate(date));
-            dispatch(RecordActionCreators.getDates(dates));
+            dispatch(RecordActionCreators.selectUserDate(eventDate));
           } catch (error) {
             dispatch(
               RecordActionCreators.setRecordError("Ошибка в получении времени")
@@ -115,7 +114,8 @@ export const RecordActionCreators = {
 
   logOut: () => async (dispatch: AppDispatch) => {
     try {
-      localStorage.removeItem("isAdmin");
+      localStorage.removeItem("isAuth");
+      localStorage.removeItem("user");
       window.location.reload();
     } catch (error) {}
   },

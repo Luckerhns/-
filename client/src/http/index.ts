@@ -17,5 +17,6 @@ const authInterceptor = (config: InternalAxiosRequestConfig<Headers>) => {
 };
 
 $authUser.interceptors.request.use(authInterceptor);
+$user.interceptors.request.use(authInterceptor);
 
 export { $user, $authUser };

@@ -2,31 +2,44 @@ import { Student } from "../models/Student";
 import UserService from "../services/User.service";
 
 export default class UserController {
-  static async createUser(req, res, next) {
+  static async registration(req, res, next) {
     try {
       const body = req.body;
-      const User = await UserService.createUser(body);
+      const { user, tokens } = await UserService.registration(body);
 
-      return res.json(User);
+      return res.json({ user: user, tokens: tokens });
+    } catch (error) {
+      next(error.message);
+    }
+  }
+  static async login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+      const { user, tokens } = await UserService.login(email, password);
+      console.log(user);
+      return res.json({ user: user, tokens: tokens });
     } catch (error) {
       next(error.message);
     }
   }
 
-  static async getUser(req, res, next) {
+  static async getAllUsersByGroup(req, res, next) {
     try {
       const body = req.body;
-      const User = await UserService.getUser(body);
 
-      return res.json(User);
+      // const groupUsers = await UserService.getAllUsersByGroup(body);
+
+      return res.json("groupUsers");
     } catch (error) {
-      next(error);
+      next(error.message);
     }
   }
 
-  static async getAllUsersByGroup(req, res, next) {
-    const body = req.body
-
-    const Users = await UserService.getAllUsersByGroup(body);
+  static async getGroupCalendar(req, res, next) {
+    try {
+      const body = req.body;
+    } catch (error) {
+      next(error.message);
+    }
   }
 }

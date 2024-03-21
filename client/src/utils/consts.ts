@@ -57,12 +57,12 @@ export const PrivateNavbarRoutesArray: INavbarRoutesArray = [
   },
   {
     path: PrivateRoutesEnum.RatingPath,
-    pathName: "rating",
+    pathName: "Оценки",
     toProfile: false,
   },
   {
     path: PrivateRoutesEnum.ProfilePath,
     pathName: "Профиль",
-    toProfile: true,
+    toProfile: false,
   },
 ];

@@ -6,22 +6,10 @@ import { IBusyRecord } from "../types/Calendar";
 
 export const event = [
   {
-    date: "2023-01-10",
-    username: "dsadsa",
-    freeTimes: [],
-    busyTimes: [],
-    notSelectedTimes: [
-      "10:00",
-      "11:00",
-      "12:00",
-      "13:00",
-      "14:00",
-      "15:00",
-      "16:00",
-      "17:00",
-      "18:00",
-      "19:00",
-    ],
+    date: "2024-01-11",
+    lessons: ["Физ-ра", "Физ-ра", "", "Физ-ра", "Физ-ра"],
+    homework: ["Сделать дз", "", "", "", "Решить уравнение"],
+    rating: [{}],
   },
 ];
 

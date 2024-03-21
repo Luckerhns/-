@@ -10,7 +10,8 @@ import { useActions } from "../../../hooks/useActions";
 import Background from "../../../components/UI/Background";
 
 const LoginPage: React.FC = () => {
-  const { openModal, setLightTheme, setDarkTheme, CloseBurger } = useActions();
+  const { openModal, setLightTheme, setDarkTheme, CloseBurger, login } =
+    useActions();
   const navigate = useNavigate();
 
   const openPage = (
@@ -113,10 +114,16 @@ const LoginPage: React.FC = () => {
         />
         <div className={styles.formActions}>
           <div>
-            Еще нет аккаунта? - <Link to={PublicRoutesEnum.RegistrationPath}>зарегистрироваться</Link>
+            Еще нет аккаунта? -{" "}
+            <Link to={PublicRoutesEnum.RegistrationPath}>
+              зарегистрироваться
+            </Link>
           </div>
           <div className={styles.toLogin}></div>
-          <button type="submit" className={styles.button}>
+          <button
+            onClick={() => login(formState.email, formState.password)}
+            className={styles.button}
+          >
             Войти
           </button>
         </div>

@@ -7,22 +7,24 @@ import { Axios } from "axios";
 export const registration = async (dto: {
   email: string;
   password: string;
-  username: string;
+  firstname: string;
+  lastname: string;
+  patronymic: string;
 }) => {
-  const { data }  = await $user.post<IUser[]>("api/user/registration", {
+  const { data } = await $user.post("api/auth/registration", {
     email: dto.email,
     password: dto.password,
-    username: dto.username,
+    firstname: dto.firstname,
+    lastname: dto.lastname,
+    patronymic: dto.patronymic,
   });
-  // console.log(data);
   return data;
 };
 
-export const login = async ({ ...dto }) => {
-  const { data } = await $user.post("api/user/login", {
+export const login = async (dto: { email: string; password: string }) => {
+  const { data } = await $user.post("api/auth/login", {
     email: dto.email,
     password: dto.password,
   });
-  localStorage.setItem("token", data.token);
-  return jwt_decode(data.token);
+  return data;
 };

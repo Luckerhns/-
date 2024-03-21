@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import database from "../../database";
 
-export const Group = database.define("Group", {
+export const Group = database.define("group", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

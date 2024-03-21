@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { registration } from "../../../http/userApi";
+import { login, registration } from "../../../http/userApi";
 import getErrorByStatus from "../../../utils/functions";
 import { AppDispatch } from "./../../store";
 import {
@@ -29,7 +29,13 @@ export const AuthActionCreators = {
     payload: isLoading,
   }),
   registration:
-    (email: string, password: string, username: string) =>
+    (
+      email: string,
+      password: string,
+      firstname: string,
+      lastname: string,
+      patronymic: string
+    ) =>
     async (dispatch: AppDispatch) => {
       try {
         dispatch(AuthActionCreators.setIsLoading(true));
@@ -38,20 +44,46 @@ export const AuthActionCreators = {
             const data = await registration({
               email,
               password,
-              username,
+              firstname,
+              lastname,
+              patronymic,
             });
             dispatch(AuthActionCreators.setIsAuth(true));
-            localStorage.setItem('isAuth', "true")
+            localStorage.setItem("isAuth", "true");
+            localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("token", (data.tokens.accessToken));
+            window.location.reload();
+            window.location.pathname = "/";
             console.log(data);
           } catch (error: any) {
-            const statusCode = error.response.status;
-            const errorType = getErrorByStatus(statusCode);
-            console.log(getErrorByStatus(statusCode));
-            dispatch(AuthActionCreators.setError(errorType));
+            console.log("Error in registration", error);
           }
         });
       } catch (error) {
         dispatch(AuthActionCreators.setError("Некорректные данные"));
       }
     },
+
+  login: (email: string, password: string) => async (dispatch: AppDispatch) => {
+    try {
+      dispatch(AuthActionCreators.setIsLoading(true));
+      setTimeout(async () => {
+        try {
+          const data = await login({ email, password });
+          console.log(data.tokens.accessToken);
+          dispatch(AuthActionCreators.setIsAuth(true));
+          localStorage.setItem("isAuth", "true");
+          localStorage.setItem("token", data.tokens.accessToken);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          // window.location.reload();
+          // window.location.pathname = "/";
+          console.log(data);
+        } catch (error: any) {
+          dispatch(AuthActionCreators.setError(error.message));
+        }
+      });
+    } catch (error) {
+      dispatch(AuthActionCreators.setError("Некорректные данные"));
+    }
+  },
 };

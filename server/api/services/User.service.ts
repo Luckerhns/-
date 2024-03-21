@@ -1,9 +1,15 @@
 import ModelException from "../errors/ModelException";
 import ErrorException from "../errors/ErrorException";
 import { Student } from "../models/Student";
+import { hash } from "bcrypt";
+import TokenService from "./dependencies/Token.service";
+import UserDto from "../dto/user-dto";
+import MailService from "./dependencies/Mail.service";
+import { v4 } from "uuid";
 
 export default class UserService {
-  static async createUser(userData) {
+  // REGISTRATION
+  static async registration(userData) {
     try {
       const candidate = await Student.findOne({
         where: { email: userData.email },
@@ -13,23 +19,114 @@ export default class UserService {
         throw new ModelException(409, "User already exists");
       }
 
-      const user = await Student.create({
-        email: userData.email,
-        password: userData.password,
-      });
+      const hashPassword = await hash(userData.password, 3);
 
-      if (!user) {
-        throw new ModelException(404, "User could not be created");
+      const activationLink = await v4();
+
+      // CREATING ADMIN
+      if (userData.email.toLowerCase() === "Luckerhackerr@gmail.com".toLowerCase()) {
+        const user = await Student.create({
+          email: userData.email,
+          password: hashPassword,
+          firstname: userData.firstname,
+          lastname: userData.lastname,
+          patronymic: userData.patronymic,
+          role: "ADMIN",
+        });
+        if (!user) {
+          throw new ModelException(404, "Пользователь не был зарегистрирован");
+        }
+
+        await MailService.sendActivationMail(
+          userData.email,
+          `${process.env.API_URL}/api/activate/${activationLink}`
+        );
+
+        const userDto = new UserDto(user);
+
+        const tokens = await TokenService.generateTokens({
+          id: user.dataValues.id,
+          ...userDto,
+        });
+
+        const data = await TokenService.saveToken(
+          userDto.id,
+          tokens.refreshToken
+        );
+
+        return { user: user, tokens: tokens };
+      } else {
+        // CREATING STUDENT
+
+        const user = await Student.create({
+          email: userData.email,
+          password: hashPassword,
+          firstname: userData.firstname,
+          lastname: userData.lastname,
+          patronymic: userData.patronymic,
+        });
+        if (!user) {
+          throw new ModelException(404, "Пользователь не был зарегистрирован");
+        }
+
+        await MailService.sendActivationMail(
+          userData.email,
+          `${process.env.API_URL}/api/activate/${activationLink}`
+        );
+
+        const userDto = new UserDto(user);
+
+        const tokens = await TokenService.generateTokens({
+          id: user.dataValues.id,
+          ...userDto,
+        });
+
+        const data = await TokenService.saveToken(
+          userDto.id,
+          tokens.refreshToken
+        );
+
+        return { user: user, tokens: tokens };
       }
-      return user;
     } catch (error) {
       throw new ErrorException(
         500,
-        `Error while creating new user : ${error.message}`
+        `Ошибка при регистрации : ${error.message}`
       );
     }
   }
 
+  // LOGIN
+
+  static async login(email, password) {
+    try {
+      const user = await Student.findOne({ where: { email: email } });
+
+      if (!user) {
+        throw new ModelException(404, "Пользователь не найден");
+      }
+
+      const userDto = new UserDto(user);
+
+      const tokens = await TokenService.generateTokens({
+        id: user.dataValues.id,
+        ...userDto,
+      });
+
+      const data = await TokenService.saveToken(
+        userDto.id,
+        tokens.refreshToken
+      );
+
+      // console.log(user)
+
+      return { user: user, tokens: tokens };
+    } catch (error) {
+      throw new ErrorException(500, `Ошибка при входе : ${error.message}`);
+    }
+  }
+
+  // GET USER
   static async getUser(body: any) {
     try {
       const user = await Student.findOne({ where: body });
@@ -47,9 +144,14 @@ export default class UserService {
     }
   }
 
-  static async getAllUsersByGroup(body) {
+  // GET USERS
+
+  static async getAllUsersByGroup(body: any) {
     try {
-      const users = await Student.findAll(body.group);
+      const users = await Student.findAll({
+        where: { group: body.group },
+      });
+
       if (!users) {
         throw new ModelException(404, "This group doenst exist");
       }
@@ -59,7 +161,7 @@ export default class UserService {
     } catch (error) {
       throw new ErrorException(
         403,
-        `Error while getting users group : ${error}`
+        `Error while getting users group : ${error.message}`
       );
     }
   }

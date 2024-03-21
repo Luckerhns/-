@@ -13,10 +13,7 @@ export default function getErrorByStatus(status: number) {
 export const findCurrentDate = (
   events: CalendarData | any[],
   selectedDate: string
-) => {
-  const selected = events?.find((elem) => elem.date === selectedDate);
-  return [selected?.freeTimes, selected?.busyTimes, selected?.notSelectedTimes];
-};
+) => {};
 
 export function eraseFreeTime(
   current: string,
@@ -95,7 +92,10 @@ export function checkEmail(e: any) {
   else return true;
 }
 
-export const getDateIsActive = (currentDate: number[], currentRecord: number[]) => {
+export const getDateIsActive = (
+  currentDate: number[],
+  currentRecord: number[]
+) => {
   if (currentDate[0] < currentRecord[0]) {
     if (currentDate[1] < currentRecord[1]) {
       return true;

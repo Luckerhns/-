@@ -22,16 +22,17 @@ export interface IBusyRecord {
 }
 
 export interface IAdminCell {
-  selectedRecordField: boolean;
-  eventDate: ICalendarData;
-  openRecordModal: any;
+  selectedRecordField?: boolean;
+  eventDate?: ICalendarData;
+  openRecordModal?: any;
+  openRecordModalTimes?: any;
   events?: any;
   selectedCellDate?: string
 }
 
 export interface IFreeTimesCell {
   selectedRecordField: boolean;
-  events: CalendarData;
+  events?: CalendarData;
 }
 
 // export type CellType = IAdminCell | IFreeTimesCell

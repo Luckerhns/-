@@ -10,7 +10,8 @@ import { useActions } from "../../../hooks/useActions";
 import Background from "../../../components/UI/Background";
 
 const RegistrationPage: React.FC = () => {
-  const { openModal, setLightTheme, setDarkTheme, CloseBurger } = useActions();
+  const { openModal, setLightTheme, setDarkTheme, CloseBurger, registration } =
+    useActions();
   const navigate = useNavigate();
 
   const openPage = (
@@ -57,6 +58,7 @@ const RegistrationPage: React.FC = () => {
       ...formState,
       [event.target.name]: event.target.value,
     });
+    console.log(formState)
   };
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -111,7 +113,9 @@ const RegistrationPage: React.FC = () => {
         className={styles.registrationForm}
       >
         <div className={styles.closeBtn}>
-          <a onClick={() => openPage(PublicRoutesEnum.MainPath, false)}>Вернуться</a>
+          <a onClick={() => openPage(PublicRoutesEnum.MainPath, false)}>
+            Вернуться
+          </a>
         </div>
         <div className={styles.formTitle}>
           <h1>Станьте студентом</h1>
@@ -175,10 +179,22 @@ const RegistrationPage: React.FC = () => {
         />
         <div className={styles.formActions}>
           <div>
-            Уже есть аккаунт? - <Link to={PublicRoutesEnum.LoginPath}>войти</Link>
+            Уже есть аккаунт? -{" "}
+            <Link to={PublicRoutesEnum.LoginPath}>войти</Link>
           </div>
           <div className={styles.toLogin}></div>
-          <button type="submit" className={styles.button}>
+          <button
+            onClick={() =>
+              registration(
+                formState.email,
+                formState.password,
+                formState.firstname,
+                formState.lastname,
+                formState.patronymic
+              )
+            }
+            className={styles.button}
+          >
             Зарегистрироваться
           </button>
         </div>

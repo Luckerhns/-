@@ -24,6 +24,12 @@ const Navbar = () => {
   const { openModal, setLightTheme, setDarkTheme, CloseBurger } = useActions();
   const navigate = useNavigate();
 
+  const isAuth = localStorage.getItem("isAuth") ? true : false;
+  const { firstname, lastname, patronymic }: any =
+    isAuth && JSON.parse(localStorage.getItem("user") || "");
+
+  // localStorage.clear()
+
   const openPage = (
     route: string,
     toProfile?: boolean,
@@ -48,15 +54,18 @@ const Navbar = () => {
   const { theme } = useTypedSelector((state) => state.theme);
   const [flag, setFlag] = useState("RU");
   const isAdmin = localStorage.getItem("isAdmin");
-  const studentName = localStorage.getItem("studentName");
+
   return (
     <header className={styles.header__container}>
       <div className={styles.header}>
         <div className={styles.second__header}>
           <div className={styles.second__grid}>
-            <span className={styles.header__logo__text}>
+            <Link
+              className={styles.header__logo}
+              to={PublicRoutesEnum.MainPath}
+            >
               Электронный дневник
-            </span>
+            </Link>
             <Link
               className={styles.header__logo}
               to={PublicRoutesEnum.MainPath}
@@ -68,7 +77,7 @@ const Navbar = () => {
         </div>
         <div className={styles.main__header}>
           <div className={styles.header__container}>
-            {!isAdmin
+            {!localStorage.getItem("isAuth")
               ? PublicNavbarRoutesArray.map((route, i) => (
                   <a
                     key={i}

@@ -10,7 +10,6 @@ import { useActions } from "../hooks/useActions";
 import CalendarHeaderComponent from "./Calendar/CalendarHeader";
 import { Moment } from "moment";
 import { useTypedSelector } from "../hooks/useTypedSelector";
-import { notSelectedTimes } from "./Calendar/CalendarModal";
 import FreeTimesCell from "./UI/Cells/FreeTimesCell";
 import BusyTimesCell from "./UI/Cells/BusyTimesCell";
 import { getCalendar } from "../http/recordApi";
@@ -37,14 +36,16 @@ const CustomCalendar = ({ withHeader, forAdmin }: any) => {
 
   const [events, setEvents] = useState(event);
 
+  const groupId: any = JSON.parse(localStorage.getItem("user") || "").groupId;
+
   useEffect(() => {
-    getCalendar()
-      .then((value) => {
-        //@ts-ignore
-        setEvents(value ? value : event);
-      })
+    getCalendar(groupId).then((value) => {
       //@ts-ignore
-      .catch(console.log("ERROR"));
+      setEvents(value ? JSON.parse(value.data.calendar) : event);
+      //@ts-ignore
+    });
+    //@ts-ignore
+    // .catch(console.log("ERROR"));
   }, []);
 
   const currentWeekDay = weekDaysRu[weekDay - 1];
@@ -83,7 +84,7 @@ const CustomCalendar = ({ withHeader, forAdmin }: any) => {
 
   useEffect(() => {
     const allTimes = findCurrentDate(events, selectedDate);
-    openRecordModalTimes(allTimes, selectedDate, events);
+    openRecordModalTimes(selectedDate);
     setTimeout(() => closeRecordModal(), 200);
     console.log("GGGG");
   }, []);
@@ -98,22 +99,23 @@ const CustomCalendar = ({ withHeader, forAdmin }: any) => {
     addNewDate?: boolean
   ) => {
     const listLength = events?.length;
-    const allTimes = findCurrentDate(events, selectedStateDate);
-    !withModal && openRecordModalTimes(allTimes, selectedDate, events);
-    if (!isDateExists && addNewDate) {
-      //@ts-ignore
-      setEvents((prevState) => [
-        ...prevState,
-        {
-          date: date ? date : String(selectedDate),
-          username: "",
-          freeTimes: [],
-          //@ts-ignore
-          notSelectedTimes: [...notSelectedTimes],
-          busyTimes: [],
-        },
-      ]);
-    }
+    // const allTimes = findCurrentDate(events, selectedStateDate);
+    // !withModal && openRecordModalTimes(allTimes, selectedDate, events);
+    // if (!isDateExists && addNewDate) {
+    //   //@ts-ignore
+    //   setEvents((prevState) => [
+    //     ...prevState,
+    //     {
+    //       date: date ? date : String(selectedDate),
+    //       username: "",
+    //       freeTimes: [],
+    //       //@ts-ignore
+    //       notSelectedTimes: [...notSelectedTimes],
+    //       busyTimes: [],
+    //     },
+    //   ]);
+    // }
+    openRecordModalTimes(selectedDate);
     console.log("GGGG");
     setIsDateExists(true);
   };
@@ -147,23 +149,19 @@ const CustomCalendar = ({ withHeader, forAdmin }: any) => {
             return (
               events !== undefined &&
               events.map((eventDate, key) => {
-                const busyTimesLength = eventDate.busyTimes.length;
-                const freeTimesLength = eventDate.freeTimes.length;
-
                 const selectedRecordField =
                   date.format("YYYY-MM-DD") === selectedDate;
 
                 if (eventDate.date.includes(date.format("YYYY-MM-DD"))) {
                   dateCounter++;
 
-                  if (freeTimesLength < 1 && +dateCounter === 1) {
+                  if (+dateCounter === 1) {
                     dateCounter = 0;
                     return <BusyTimesCell />;
                   } else {
                     dateCounter = 0;
                     return (
                       <FreeTimesCell
-                        events={events}
                         selectedRecordField={selectedRecordField}
                       />
                     );
@@ -188,16 +186,16 @@ const CustomCalendar = ({ withHeader, forAdmin }: any) => {
             let counter = 0;
             if (events.length > 0) {
               return events.map((eventDate: any, key: any) => {
-                if (eventDate.busyTimes.length > 0 && counter < 1) {
+                if (counter < 1) {
                   counter++;
                   return (
                     <AdminCell
                       openRecordModal={openRecordModal}
+                      openRecordModalTimes={openRecordModalTimes}
                       eventDate={eventDate}
-                      selectedCellDate={selectedCellDate}
-                      selectedRecordField={selectedRecordField}
                       events={events}
-                      key={key}
+                      selectedRecordField={selectedRecordField}
+                      selectedCellDate={selectedCellDate}
                     />
                   );
                 } else {

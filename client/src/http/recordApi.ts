@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { $user } from ".";
 import { CalendarData } from "../types/Calendar";
 import { event } from "../utils/data";
@@ -10,15 +11,14 @@ export const newRecord = async (calendar: CalendarData) => {
   return data;
 };
 
-export const getCalendar = async () => {
+export const getCalendar = async (groupId: number) => {
   try {
-    const { data } = await $user.post("api/admin/calendar/get-calendar");
-    const calendar = Object.values(JSON.parse(data.record));
-
-    console.log("SUCCESS", data, calendar);
-    return calendar;
-  } catch (error) {
-    console.log("ERROR", error);
+    const data = await $user.post("api/teacher/get-group-calendar", {groupId: groupId});
+    // const calendar = Object.values(JSON.parse(data.record));
+    
+    return data
+  } catch (error: any) {
+    console.log("ERROR", error.message);
     return event;
   }
 };

@@ -1,6 +1,6 @@
 import { verify } from "jsonwebtoken";
-import TokenService from "../services/dependencies/Token.service";
 import ErrorException from "../errors/ErrorException";
+import TokenService from "../services/dependencies/Token.service";
 
 export default function (role) {
   return async function (req, res, next) {
@@ -8,22 +8,35 @@ export default function (role) {
       next();
     }
     try {
-      const { isAdmin } = req.body;
-      if (!isAdmin) {
-        return next(ErrorException.UnauthorizedError("You have no access"));
+      const authorizationHeader = req.headers.authorization;
+      if (!authorizationHeader) {
+        return next(
+          ErrorException.UnauthorizedError("Нету хедера авторизации").message
+        );
+      }
+      const accessToken = authorizationHeader.split(" ")[1];
+      if (!accessToken) {
+        return next(ErrorException.UnauthorizedError("Нету токена").message);
       }
 
-      // const userRole = verify(token, process.env.JWT_ACCESS_SECRET);
+      const userData = TokenService.validateAccessToken(accessToken);
 
-      // const userDto = await TokenService.validateAccesToken(token);
+      if (!userData) {
+        return next(
+          ErrorException.UnauthorizedError("Неправильный токен").message
+        );
+      }
 
-      // if (userDto.role !== role) {
-      //   return next(ErrorException.Forbidden("You have no access"));
-      // }
+      req.user = userData;
+      console.log("Удачная проверка авторизации");
+
+      // console.log(req.headers.authorization);
 
       next();
     } catch (error) {
-      return next(ErrorException.Forbidden("You dont have access"));
+      next(
+        ErrorException.UnauthorizedError("Ошибка при проверке роли").message
+      );
     }
   };
 }
