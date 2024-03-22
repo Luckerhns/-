@@ -12,6 +12,7 @@ import {
   sortReadyList,
 } from "../../utils/functions";
 import { event } from "../../utils/data";
+import { $user } from "../../http";
 
 const CalendarModal = () => {
   const [currentEvent, setCurrentEvent] = useState<number>(0);
@@ -27,9 +28,11 @@ const CalendarModal = () => {
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
 
-  const isTeacher = JSON.parse(localStorage.getItem("user") || "").role === "ADMIN"
+  const isTeacher =
+    localStorage.getItem("user") &&
+    JSON.parse(localStorage.getItem("user") || "")?.role === "ADMIN";
 
-  console.log(isTeacher)
+  console.log(isTeacher);
 
   const items: MenuProps["items"] = [];
   const recordType: MenuProps["items"] = [];
@@ -60,29 +63,6 @@ const CalendarModal = () => {
     }
   };
 
-
-  function addNewFreeTime(current: string) {
-    // let selectedObjectIndex: number = 0;
-    // events.map((e, i) => {
-    //   if (e.date == selectedStateDate) {
-    //     selectedObjectIndex = i;
-    //     e.notSelectedTimes.map((target, i) => {
-    //       //@ts-ignore
-    //       if (target.includes(current)) {
-    //         //@ts-ignore
-    //         setEvents((prevData) => [...prevData, e.freeTimes.push(target)]);
-    //         //@ts-ignore
-    //         setEvents((prevData) => [
-    //           ...prevData,
-    //           e.notSelectedTimes.splice(i, 1),
-    //         ]);
-    //       }
-    //     });
-    //   }
-    // });
-    // setCurrentFunc("freeTimes");
-  }
-
   useEffect(() => {}, []);
 
   useEffect(() => {
@@ -109,6 +89,16 @@ const CalendarModal = () => {
 
   // console.log(dateData, events)
 
+  const [date, setDate] = useState("");
+  const [work, setWork] = useState("");
+
+  const send = async (date: any, work: string) => {
+    await $user.post("/api/events/add-event", { date, work });
+    console.log("GREAT");
+    console.log(typeof date, date);
+  };
+
+
   return (
     <div
       className={
@@ -122,13 +112,35 @@ const CalendarModal = () => {
         // SECOND ADMIN SECTION
         // */}
 
-      {isTeacher && (
-        <div
-          className={styles.modal__content}
-          onClick={(e) => e.stopPropagation()}
-        >
+      <div
+        className={styles.modal__content}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div>
+          <div>Добавить дату</div>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
         </div>
-      )}
+        <div>
+          <div>Добавить задание</div>
+          <input
+            type="text"
+            value={work}
+            onChange={(e) => setWork(e.target.value)}
+          />
+        </div>
+        <div
+          onClick={() => {
+            send(date, work);
+            window.location.reload()
+          }}
+        >
+          Создать
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import CustomCalendar from "../components/CustomCalendar";
 import AboutmePage from "../pages/ru/AboutmePage";
 import AdminPage from "../pages/ru/AdminPage";
 import AdminRecords from "../pages/ru/AdminRecordsPage";

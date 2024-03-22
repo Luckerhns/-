@@ -13,7 +13,11 @@ export default function getErrorByStatus(status: number) {
 export const findCurrentDate = (
   events: CalendarData | any[],
   selectedDate: string
-) => {};
+) => {
+  events.find(date => {
+    return date.date === selectedDate;
+  })
+};
 
 export function eraseFreeTime(
   current: string,

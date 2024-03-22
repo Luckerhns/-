@@ -1,4 +1,4 @@
-@import "./variables";
+@import "../variables";
 
 .record__title {
   width: $containerWidth;
@@ -28,5 +28,48 @@ thead {
 
   .cell {
     font-size: 10px;
+  }
+}
+
+.addWorkBtn {
+  margin: 50px 0; 
+}
+
+.homeworksContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .homeworkCard {
+    width: 400px;
+    height: 200px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0px 0px 0px 0 inset rgb(188, 188, 188);
+    transition: all .4s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 20px 0;
+
+    .deleteBtn {
+      width: 150px;
+      height: 50px;
+      background-color: rgb(170, 64, 64);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 40px;
+    }    
+    
+    &:hover {
+      transition: all 1s ease-in-out;
+      box-shadow: 2px 2px 5px 5px inset rgb(188, 188, 188);
+    }
   }
 }

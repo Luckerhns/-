@@ -17,6 +17,7 @@ const AdminCell: FC<IAdminCell> = ({
   selectedCellDate,
 }) => {
   const { selectedUserDate } = useTypedSelector((state) => state.recordModal);
+  const {selectUserDate} = useActions();
   const currentDate = events.find((date: any) => {if(date.date === eventDate?.date) return date.date});
   console.log(currentDate)
   return (
@@ -37,9 +38,12 @@ const AdminCell: FC<IAdminCell> = ({
               selectedRecordField
                 ? () => {
                     openRecordModalTimes(selectedCellDate, eventDate);
-                    console.log(eventDate);
+                    console.log();
+                    // @ts-ignore
+                    selectUserDate(eventDate.date && eventDate.date)
                   }
-                : () => console.log(eventDate)
+                  // @ts-ignore
+                : () => console.log()
             }
           >
             редактировать
